@@ -2,7 +2,7 @@ import Image
 
 def inverse_image():
     #Open Image 
-    img = Image.open("coins.png")
+    img = Image.open("brady.jpg")
     #Load pixel information
     pix = img.load()
     #Find the width and height of the image
@@ -14,7 +14,7 @@ def inverse_image():
             r,g,b = pix[x,y]
             pix[x,y] = (255 - r, 255 - g, 255- b)
     #Save Input
-    img.save("coins2.png")
+    img.save("brady_inv.png")
 
 if __name__ == "__main__":
     inverse_image()
