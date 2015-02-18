@@ -178,7 +178,7 @@ def plot_all_cdfs(cdf_array):
     plt.title("Plot of all CDFs")
     plt.xlabel("Pixel Color")
     plt.ylabel("Probablity")
-    plt.plot(ind, cdf_array[0], 'r--', ind, cdf_array[1], 'bs', ind, cdf_array[2], 'g^', ind, cdf_array[3], 'b^')
+    plt.plot(ind, cdf_array[0], 'r--', ind, cdf_array[1], 'b--', ind, cdf_array[2], 'g^', ind, cdf_array[3], 'b^')
     plt.savefig('all_cdfs.png')
    
 
@@ -222,7 +222,7 @@ if __name__ == '__main__':
         #find the new probability of each pixel
         final_array = probability_output(round_array, probability_array, width, height)
         #find the new cdf
-        final_array_cdf = Cdf_Array(final_array, width, height)
+        final_array_cdf = Cdf_Array(final_array)
         #print out the original probability, original cdf, new probability, and new CDF
         plot_histogram(probability_array, cdf_array, final_array, final_array_cdf, output_number)
         #increase control variable by 1
