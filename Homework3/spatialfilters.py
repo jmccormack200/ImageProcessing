@@ -85,28 +85,6 @@ class ImageProcessing:
         middle_value = 0
         for x in range(self.width):
             for y in range(self.height):
-                if (y+1 >= self.height or y-1 < 0 or x+1 >= self.width or x-2 <= self.height):
-                    pass
-                else:
-                    middle_value += old_pix[x,y][0] * filtergrid[1][1]
-                    middle_value += old_pix[x,y+1][0] * filtergrid[1][2]
-                    middle_value += old_pix[x,y-1][0] * filtergrid[1][0]
-                    middle_value += old_pix[x+1,y][0] * filtergrid[2][1]
-                    middle_value += old_pix[x+1,y+1][0] * filtergrid[2][2]
-                    middle_value += old_pix[x+1,y-1][0] * filtergrid[2][0]
-                    middle_value += old_pix[x-1,y][0] * filtergrid[0][1]
-                    middle_value += old_pix[x-1,y+1][0] * filtergrid[0][2]
-                    middle_value += old_pix[x-1,y-1][0] * filtergrid[0][0]
-                new_pix[x,y] = (int(middle_value / constant))            
-                
-        new_image.convert("RGB").save(name + ".bmp")
-    """
-        new_image = self.image.copy()
-        old_pix = self.image.load()
-        new_pix = new_image.load()
-        middle_value = 0
-        for x in range(self.width):
-            for y in range(self.height):
                 middle_value += old_pix[x,y][0] * filtergrid[1][1]
                 if (y+1 < self.height):
                     middle_value += old_pix[x,y+1][0] * filtergrid[1][2]
@@ -125,6 +103,28 @@ class ImageProcessing:
                     if (y-1 >= 0):
                         middle_value += old_pix[x-1,y-1][0] * filtergrid[0][0]
                 new_pix[x,y] = (int(middle_value / constant))
+                
+        new_image.convert("RGB").save(name + ".bmp")
+    """
+        new_image = self.image.copy()
+        old_pix = self.image.load()
+        new_pix = new_image.load()
+        middle_value = 0
+        for x in range(self.width):
+            for y in range(self.height):
+                if (y+1 >= self.height or y-1 < 0 or x+1 >= self.width or x-2 <= self.height):
+                    pass
+                else:
+                    middle_value += old_pix[x,y][0] * filtergrid[1][1]
+                    middle_value += old_pix[x,y+1][0] * filtergrid[1][2]
+                    middle_value += old_pix[x,y-1][0] * filtergrid[1][0]
+                    middle_value += old_pix[x+1,y][0] * filtergrid[2][1]
+                    middle_value += old_pix[x+1,y+1][0] * filtergrid[2][2]
+                    middle_value += old_pix[x+1,y-1][0] * filtergrid[2][0]
+                    middle_value += old_pix[x-1,y][0] * filtergrid[0][1]
+                    middle_value += old_pix[x-1,y+1][0] * filtergrid[0][2]
+                    middle_value += old_pix[x-1,y-1][0] * filtergrid[0][0]
+                new_pix[x,y] = (int(middle_value / constant))            
     """
 
 
