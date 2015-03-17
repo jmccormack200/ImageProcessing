@@ -80,8 +80,8 @@ class ImageProcessing:
     
     def __iterator(self, filtergrid, constant, name):
         new_image = self.image.copy()
-        pix = self.image.load()
-        #pix = new_image.load()
+        #pix = self.image.load()
+        pix = new_image.load()
         for x in range(self.width):
             for y in range(self.height):
                 middle_value = 0
@@ -104,7 +104,7 @@ class ImageProcessing:
                         middle_value += pix[x-1,y-1][0] * filtergrid[0][0]
                 pix[x,y] = (int(middle_value / constant))
                 
-        self.image.convert("RGB").save(name + ".bmp")
+        new_image.convert("RGB").save(name + ".bmp")
 
 
 
