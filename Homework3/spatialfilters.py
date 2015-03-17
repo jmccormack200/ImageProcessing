@@ -63,7 +63,7 @@ class ImageProcessing:
         
     def laplacianFilter(self, laplacian=True):
         if laplacian:
-            filtergrid = [[0,1,0],[1,-4,1],[0,1,0]]
+            filtergrid = [[0,-1,0],[-1,4,-1],[0,-1,0]]
             constant = 1
             name = "laplacian"
             self.__iterator(filtergrid, constant, name)
@@ -111,16 +111,16 @@ class ImageProcessing:
             for y in range(2, self.height-2):
                 middle_value = 0
                 middle_value += pix[x,y] * filtergrid[1][1]
-                middle_value += pix[x,y+1] * filtergrid[1][2]
-                middle_value += pix[x,y-1] * filtergrid[1][0]
-                middle_value += pix[x+1,y] * filtergrid[2][1]
+                middle_value += pix[x,y+1] * filtergrid[2][1]
+                middle_value += pix[x,y-1] * filtergrid[0][1]
+                middle_value += pix[x+1,y] * filtergrid[1][2]
                 middle_value += pix[x+1,y+1] * filtergrid[2][2]
-                middle_value += pix[x+1,y-1] * filtergrid[2][0]
-                middle_value += pix[x-1,y] * filtergrid[0][1]
-                middle_value += pix[x-1,y+1] * filtergrid[0][2]
+                middle_value += pix[x+1,y-1] * filtergrid[0][2]
+                middle_value += pix[x-1,y] * filtergrid[1][0]
+                middle_value += pix[x-1,y+1] * filtergrid[2][0]
                 middle_value += pix[x-1,y-1] * filtergrid[0][0]
-                if middle_value < 0:
-                    middle_value *= -1
+                #if middle_value < 0:
+                #   middle_value *= -1
                 pix[x,y] = (int(middle_value / constant))
         new_image.save(name + ".jpg")
 
@@ -132,9 +132,9 @@ if __name__ == "__main__":
     #imageprocessing = ImageProcessing("Boston_Normal.bmp")
     imageprocessing = ImageProcessing("wdg4.gif")
     #imageprocessing.outputImageAs("Test")
-    imageprocessing.linearSmoothingFilter()
-    imageprocessing.linearSmoothingFilter(weighted=True)
+    #imageprocessing.linearSmoothingFilter()
+    #imageprocessing.linearSmoothingFilter(weighted=True)
     #imageprocessing.gaussianFilter(0.5)
     #imageprocessing.medianFilter()
-    #imageprocessing.laplacianFilter()
+    imageprocessing.laplacianFilter()
     #imageprocessing.laplacianFilter(False)
