@@ -86,6 +86,7 @@ class ImageProcessing:
             for y in range(self.height):
                 middle_value = 0
                 middle_value += pix[x,y][0] * filtergrid[1][1]
+                #print middle_value
                 if (y+1 < self.height):
                     middle_value += pix[x,y+1][0] * filtergrid[1][2]
                 if (y-1 >= 0):
@@ -102,7 +103,9 @@ class ImageProcessing:
                         middle_value += pix[x-1,y+1][0] * filtergrid[0][2]
                     if (y-1 >= 0):
                         middle_value += pix[x-1,y-1][0] * filtergrid[0][0]
-                pix[x,y] = (int(middle_value / constant))
+                #print middle_value
+                pix[x,y] = pix[x,y][0] + ((int(middle_value / constant)))
+                print pix[x,y]
                 
         new_image.convert("RGB").save(name + ".bmp")
 
@@ -112,9 +115,9 @@ class ImageProcessing:
 if __name__ == "__main__":
     imageprocessing = ImageProcessing("shapes.jpg")
     #imageprocessing.outputImageAs("Test")
-    imageprocessing.linearSmoothingFilter()
+    #imageprocessing.linearSmoothingFilter()
     #imageprocessing.linearSmoothingFilter(weighted=True)
     #imageprocessing.gaussianFilter(0.5)
     #imageprocessing.medianFilter()
-    #imageprocessing.laplacianFilter()
-    #imageprocessing.laplacianFilter(False)
+    imageprocessing.laplacianFilter()
+    imageprocessing.laplacianFilter(False)
