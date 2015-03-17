@@ -106,23 +106,28 @@ class ImageProcessing:
     def __iterator(self, filtergrid, constant, name):
         new_image = self.image.copy()
         #pix = self.image.load()
-        pix = new_image.load()
+        #pix = new_image.load()
+        pix = np.asarray(new_image)
+        filtered = np.empty([self.height, self.width])
+        print self.width
+        print self.height
         for x in range(2, self.width-2):
             for y in range(2, self.height-2):
                 middle_value = 0
-                middle_value += pix[x,y] * filtergrid[1][1]
-                middle_value += pix[x,y+1] * filtergrid[2][1]
-                middle_value += pix[x,y-1] * filtergrid[0][1]
-                middle_value += pix[x+1,y] * filtergrid[1][2]
-                middle_value += pix[x+1,y+1] * filtergrid[2][2]
-                middle_value += pix[x+1,y-1] * filtergrid[0][2]
-                middle_value += pix[x-1,y] * filtergrid[1][0]
-                middle_value += pix[x-1,y+1] * filtergrid[2][0]
-                middle_value += pix[x-1,y-1] * filtergrid[0][0]
+                middle_value += pix[y][x] * filtergrid[1][1]
+                middle_value += pix[y+1][x] * filtergrid[2][1]
+                middle_value += pix[y-1][x] * filtergrid[0][1]
+                middle_value += pix[y][x+1] * filtergrid[1][2]
+                middle_value += pix[y+1][x+1] * filtergrid[2][2]
+                middle_value += pix[y-1][x+1] * filtergrid[0][2]
+                middle_value += pix[y][x-1] * filtergrid[1][0]
+                middle_value += pix[y+1][x-1] * filtergrid[2][0]
+                middle_value += pix[y-1][x-1] * filtergrid[0][0]
                 #if middle_value < 0:
                 #   middle_value *= -1
-                pix[x,y] = (int(middle_value / constant))
-        new_image.save(name + ".jpg")
+                filtered[y][x] = (int(middle_value / constant))
+        filtered_im = Image.fromarray(filtered)
+        filtered_im.convert('RGB').save(name + ".jpg")
 
 
 
@@ -132,9 +137,9 @@ if __name__ == "__main__":
     #imageprocessing = ImageProcessing("Boston_Normal.bmp")
     imageprocessing = ImageProcessing("wdg4.gif")
     #imageprocessing.outputImageAs("Test")
-    #imageprocessing.linearSmoothingFilter()
+    imageprocessing.linearSmoothingFilter()
     #imageprocessing.linearSmoothingFilter(weighted=True)
     #imageprocessing.gaussianFilter(0.5)
     #imageprocessing.medianFilter()
-    imageprocessing.laplacianFilter()
+    #imageprocessing.laplacianFilter()
     #imageprocessing.laplacianFilter(False)
