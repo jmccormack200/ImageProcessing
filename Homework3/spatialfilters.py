@@ -17,7 +17,6 @@ class ImageProcessing:
         pix = self.image.load()
         padded_array = []
         padded_array.append([0]*(self.width + 2))
-        #padded_array.append([0]*(self.width + 4))
         for y in range(self.height):
             row = []
             for x in range(self.width + 2):
@@ -27,7 +26,6 @@ class ImageProcessing:
                     row.append(pix[x-1,y])
             padded_array.append(row)
         padded_array.append([0]*(self.width + 2))
-        #padded_array.append([0]*(self.width + 4))
         im = Image.fromarray(np.uint8(padded_array))
         self.image = im
         (self.width, self.height) = self.image.size
@@ -49,16 +47,18 @@ class ImageProcessing:
             filtered_im.convert('RGB').save(name + ".jpg") 
     
     def gaussianFilter(self, variance):
-        constant = 1
+        center = 1 / (2 * pi * variance)
         exponential = exp(-1.0/(2 * variance))
-        edge = constant * exponential
-        corner = edge * exponential
-        constant += edge * 4 + corner * 4
+        edge = center * exponential
+        corner = center * exp(-(2)/2  * variance)
         
-        filtergrid = [[corner, edge, corner],[edge, constant, edge],
+        filtergrid = [[corner, edge, corner],[edge, center, edge],
                 [corner, edge, corner]]
+        constant = corner * 4 + edge * 4 + center
+        for a in filtergrid:
+            print a
         name = "gaussian"
-        filtered_im = self.__iterator(filtergrid)
+        filtered_im = self.__iterator(filtergrid, constant=constant)
         filtered_im.convert('RGB').save(name + ".jpg") 
         
     def laplacianFilter(self, laplacian=True):
@@ -169,11 +169,11 @@ if __name__ == "__main__":
     #imageprocessing.outputImageAs("Test")
     #imageprocessing.linearSmoothingFilter()
     #imageprocessing.linearSmoothingFilter(weighted=True)
-    #imageprocessing.gaussianFilter(0.5)
+    imageprocessing.gaussianFilter(0.5)
     #imageprocessing.medianFilter()
     #imageprocessing.laplacianFilter()
     #imageprocessing.laplacianFilter(False)
-    imageprocessing.sobelFilter("x")
-    imageprocessing.sobelFilter("y")
-    imageprocessing.sobelFilter("xtheny")
-    imageprocessing.sobelFilter("ythenx")
+    #imageprocessing.sobelFilter("x")
+    #imageprocessing.sobelFilter("y")
+    #imageprocessing.sobelFilter("xtheny")
+    #imageprocessing.sobelFilter("ythenx")
