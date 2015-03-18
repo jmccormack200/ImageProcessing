@@ -16,38 +16,37 @@ class ImageProcessing:
     def __pad(self):
         pix = self.image.load()
         padded_array = []
-        padded_array.append([0]*(self.width + 4))
-        padded_array.append([0]*(self.width + 4))
+        padded_array.append([0]*(self.width + 2))
+        #padded_array.append([0]*(self.width + 4))
         for y in range(self.height):
             row = []
-            for x in range(self.width + 4):
-                if ((x <= 1) or (x - 2 >= self.width)):
+            for x in range(self.width + 2):
+                if ((x <= 0) or (x - 1 >= self.width)):
                     row.append(0)
                 else:
-                    row.append(pix[x-2,y])
+                    row.append(pix[x-1,y])
             padded_array.append(row)
-        padded_array.append([0]*(self.width + 4))
-        padded_array.append([0]*(self.width + 4))
+        padded_array.append([0]*(self.width + 2))
+        #padded_array.append([0]*(self.width + 4))
         im = Image.fromarray(np.uint8(padded_array))
         self.image = im
         (self.width, self.height) = self.image.size
         
         
-    def outputImageAs(self, filename):
-        
-        self.image.save(filename + ".bmp")
         
     def linearSmoothingFilter(self, weighted=False):
         if weighted:
             filtergrid = [[1,2,1],[2,4,2],[1,2,1]]
             constant = 16
             name = "weightedSmoothing"
-            self.__iterator(filtergrid, constant, name)
+            filtered_im = self.__iterator(filtergrid, constant)
+            filtered_im.convert('RGB').save(name + ".jpg")
         else:
             filtergrid = [[1,1,1],[1,1,1],[1,1,1]]
             constant = 9
             name = "linearSmoothing"
-            self.__iterator(filtergrid, constant, name)
+            filtered_im = self.__iterator(filtergrid, constant)
+            filtered_im.convert('RGB').save(name + ".jpg") 
     
     def gaussianFilter(self, variance):
         constant = 1
@@ -59,51 +58,84 @@ class ImageProcessing:
         filtergrid = [[corner, edge, corner],[edge, constant, edge],
                 [corner, edge, corner]]
         name = "gaussian"
-        self.__iterator(filtergrid, constant, name)
+        filtered_im = self.__iterator(filtergrid)
+        filtered_im.convert('RGB').save(name + ".jpg") 
         
     def laplacianFilter(self, laplacian=True):
         if laplacian:
             filtergrid = [[0,-1,0],[-1,4,-1],[0,-1,0]]
-            constant = 1
             name = "laplacian"
-            self.__iterator(filtergrid, constant, name)
+            filtered_im = self.__iterator(filtergrid, scale=150)
         else: 
             #otherwise isotropic
             filtergrid = [[1,1,1],[1,-8,1],[1,1,1]]
-            constant = 1
             name = "isotropic"
-            self.__iterator(filtergrid, constant, name)
+            filtered_im = self.__iterator(filtergrid, scale=150)
+        filtered_im.convert('RGB').save(name + ".jpg") 
+    
+    def sobelFilter(self, mode="x"):
+        if mode == "y":
+            filtergrid = [[-1,0,1],[-2,0,2],[-1,0,1]]
+            name = "sobelY"
+            filtered_im = self.__iterator(filtergrid)
+            filtered_im.convert('RGB').save(name + ".jpg")   
+            
+        elif mode == "x":
+            filtergrid = [[-1,-1,-1],[0,0,0],[1,1,1]]
+            name = "sobelX"
+            filtered_im = self.__iterator(filtergrid)
+            filtered_im.convert('RGB').save(name + ".jpg")
+            
+        elif mode =="xtheny":
+            filtergrid = [[-1,-1,-1],[0,0,0],[1,1,1]]
+            name = "sobelXthenY"
+            filtered_im = self.__iterator(filtergrid)
+            filtered_im.convert('RGB').save(name + ".jpg")
+            imageprocessing = ImageProcessing(name + ".jpg")
+            imageprocessing.sobelFilter("y")
+            
+        elif mode =="ythenx":
+            filtergrid = [[-1,0,1],[-2,0,2],[-1,0,1]]
+            name = "sobelYthenX"
+            filtered_im = self.__iterator(filtergrid)
+            filtered_im.convert('RGB').save(name + ".jpg")
+            imageprocessing = ImageProcessing(name + ".jpg")
+            imageprocessing.sobelFilter("x")
+            
         
     
     
     def medianFilter(self, name="median"):
         new_image = self.image
         pix = new_image.load()
+        filtered = np.empty([self.height, self.width])
         for x in range(self.width):
             for y in range(self.height):
                 middle_value = []
-                middle_value.append(pix[x,y][0])
+                middle_value.append(pix[x,y])
                 if (y+1 < self.height):
-                    middle_value.append(pix[x,y+1][0])
+                    middle_value.append(pix[x,y+1])
                 if (y-1 >= 0):
-                    middle_value.append(pix[x,y-1][0])
+                    middle_value.append(pix[x,y-1])
                 if (x+1 < self.width):
-                    middle_value.append(pix[x+1,y][0])
+                    middle_value.append(pix[x+1,y])
                     if (y+1 < self.height):
-                        middle_value.append(pix[x+1,y+1][0])
+                        middle_value.append(pix[x+1,y+1])
                     if (y-1 >= 0):
-                        middle_value.append(pix[x+1,y-1][0])
+                        middle_value.append(pix[x+1,y-1])
                 if (x-1 >= 0):
-                    middle_value.append(pix[x-1,y][0])
+                    middle_value.append(pix[x-1,y])
                     if (y+1 < self.height):
-                        middle_value.append(pix[x-1,y+1][0])
+                        middle_value.append(pix[x-1,y+1])
                     if (y-1 >= 0):
-                        middle_value.append(pix[x-1,y-1][0])
-                pix[x,y] = int(np.median(np.array(middle_value)))
-        
+                        middle_value.append(pix[x-1,y-1])
+                filtered[y][x] = int(np.median(np.array(middle_value)))
+                
+        filtered_im = Image.fromarray(filtered)
+        filtered_im.convert('RGB').save(name + ".jpg")
         new_image.convert("RGB").save(name + ".bmp")
     
-    def __iterator(self, filtergrid, constant, name):
+    def __iterator(self, filtergrid, constant=1, scale=1):
         new_image = self.image.copy()
         #pix = self.image.load()
         #pix = new_image.load()
@@ -111,8 +143,8 @@ class ImageProcessing:
         filtered = np.empty([self.height, self.width])
         print self.width
         print self.height
-        for x in range(2, self.width-2):
-            for y in range(2, self.height-2):
+        for x in range(1, self.width-1):
+            for y in range(1, self.height-1):
                 middle_value = 0
                 middle_value += pix[y][x] * filtergrid[1][1]
                 middle_value += pix[y+1][x] * filtergrid[2][1]
@@ -123,23 +155,25 @@ class ImageProcessing:
                 middle_value += pix[y][x-1] * filtergrid[1][0]
                 middle_value += pix[y+1][x-1] * filtergrid[2][0]
                 middle_value += pix[y-1][x-1] * filtergrid[0][0]
-                #if middle_value < 0:
-                #   middle_value *= -1
-                filtered[y][x] = (int(middle_value / constant))
-        filtered_im = Image.fromarray(filtered)
-        filtered_im.convert('RGB').save(name + ".jpg")
+                filtered[y][x] = (int(middle_value / constant)) + scale
+        return Image.fromarray(filtered)
+        
 
 
 
         
 if __name__ == "__main__":
     #imageprocessing = ImageProcessing("shapes.jpg")
-    #imageprocessing = ImageProcessing("Boston_Normal.bmp")
-    imageprocessing = ImageProcessing("wdg4.gif")
+    imageprocessing = ImageProcessing("Boston_Normal.bmp")
+    #imageprocessing = ImageProcessing("wdg4.gif")
     #imageprocessing.outputImageAs("Test")
-    imageprocessing.linearSmoothingFilter()
+    #imageprocessing.linearSmoothingFilter()
     #imageprocessing.linearSmoothingFilter(weighted=True)
     #imageprocessing.gaussianFilter(0.5)
     #imageprocessing.medianFilter()
     #imageprocessing.laplacianFilter()
     #imageprocessing.laplacianFilter(False)
+    imageprocessing.sobelFilter("x")
+    imageprocessing.sobelFilter("y")
+    imageprocessing.sobelFilter("xtheny")
+    imageprocessing.sobelFilter("ythenx")
