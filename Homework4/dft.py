@@ -78,12 +78,12 @@ class DFT:
         for u in range(self.M):
             for v in range(self.N):
                 if tag == 'none':
-                    point = cmath.rect(self.scaledPower[u][v], self.scaledPhase[u][v])
+                    point = cmath.rect(self.outputPower[u][v], self.outputPhase[u][v])
                 if tag == 'phase':
-                    point = self.scaledPhase[u][v]
+                    point = self.outputPhase[u][v]
                 if tag == 'power':
-                    point = self.scaledPower[u][v]
-                exponent = cmath.exp(2j*cmath.pi*((float(u*x)/self.M)+(float(v*y)/self.N)))
+                    point = self.outputPower[u][v]
+                exponent = cmath.exp(1j * cmath.pi * 2.0 *((float(u*x)/self.M)+(float(v*y)/self.N)))
                 outputPoint += point * exponent
         return (outputPoint / (self.M * self.N))
 
