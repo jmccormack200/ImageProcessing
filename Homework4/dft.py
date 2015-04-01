@@ -31,13 +31,12 @@ class DFT:
                 if abs(complex) >= max_value:
                     max_value = abs(complex)
                 self.outputPhase[u][v] = cmath.phase(complex)
-        print max_value
+
         for u in range(self.M):
             for v in range(self.N):
-                self.scaledPower[u][v] = (255.0/math.log10(256))*math.log10(1+
-                        255/(max_value))*self.outputPower[u][v]
-
-
+                self.scaledPower[u][v] = int((255.0/math.log10(256))*(math.log10(1+
+                        ((255.0*self.outputPower[u][v])/(max_value)))))
+            
         outputDFT_im = Image.fromarray(self.scaledPower)
         outputDFT_im.convert('RGB').save(self.name + "dftPower.jpg")
        
