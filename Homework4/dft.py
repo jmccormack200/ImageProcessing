@@ -89,30 +89,33 @@ class DFT:
 
 
 if __name__ == "__main__":
-    imagePath = "BWskull.jpg"
-    imagePath2 = "sword.png"
-    #imagepath = "lenna.gif"
-    #imagePath2 = "cln1.gif"
+    #imagePath = "BWskull.jpg"
+    #imagePath2 = "sword.png"
+    imagepath = "lenna.gif"
+    imagePath2 = "cln1.gif"
 
     dft = DFT(imagePath,"skull")
     dft2 = DFT(imagePath2,"sword")
     dft.takeDft()
     dft.takeIDFT()
-    #dft.takeIDFT("phase")
-    #dft.takeIDFT("power")
+    dft.takeIDFT("phase")
+    dft.takeIDFT("power")
     
-    #dft2.takeDft()
-    #dft2.takeIDFT()
-    #dft2.takeIDFT("phase")
-    #dft2.takeIDFT("power")
+    dft2.takeDft()
+    dft2.takeIDFT()
+    dft2.takeIDFT("phase")
+    dft2.takeIDFT("power")
     
-    #TEMPscaledPower = np.empty([dft.M, dft.N])
-    #TEMPscaledPower = dft.scaledPower
-    #dft.scaledPower = dft2.scaledPower
-    #dft2.scaledPower = TEMPscaledPower
+    TEMPoutputPower = np.empty([dft.M, dft.N])
+    TEMPoutputPower = dft.outputPower
     
-    #dft2.takeIDFT()
-    #dft.takeIDFT()
+    dft.name = "SwitchedPhase1"
+    dft2.name = "SwitchedPhase2"
+    dft.outputPower = dft2.outputPower
+    dft2.outputPower = TEMPoutputPower
+    
+    dft2.takeIDFT()
+    dft.takeIDFT()
     
 
     
