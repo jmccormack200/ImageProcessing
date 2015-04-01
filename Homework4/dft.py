@@ -38,7 +38,7 @@ class DFT:
                 self.outputPhase[u][v] = cmath.phase(complex)
                 if cmath.phase(complex) >= max_value_phase:
                     max_value_phase = cmath.phase(complex)
-
+            print u
         for u in range(self.M):
             for v in range(self.N):
                 self.scaledPower[u][v] = int((255.0/math.log10(256))*(math.log10(1+
@@ -63,14 +63,24 @@ class DFT:
 
     def takeIDFT(self,tag='none'):
         self.outputIDFT = np.empty([self.M, self.N])
+        self.scaledIDFT = np.empty([self.M, self.N])
+        
+        max_value = 0
         
         for x in range(self.M):
             for y in range(self.N):
                 value = self.computeIPoint(x,y,tag)
                 self.outputIDFT[x][y] = abs(int(value.real))
+                if self.outputIDFT[x][y] >= max_value:
+                    max_value = self.outputIDFT[x][y]
+        
+        for x in range(self.M):
+            for y in range(self.N):
+                self.scaledIDFT[x][y] = int((255.0/math.log10(256))*(math.log10(1+
+                        ((255.0*abs(self.outputIDFT[x][y]))/(max_value)))))
         
         
-        outputiDFT_im = Image.fromarray(self.outputIDFT)
+        outputiDFT_im = Image.fromarray(self.scaledIDFT)
         outputiDFT_im.convert('RGB').save(self.name + "idftImage"+ tag + ".jpg")                 
    
     def computeIPoint(self, x, y,tag):
@@ -80,7 +90,7 @@ class DFT:
                 if tag == 'none':
                     point = cmath.rect(self.outputPower[u][v], self.outputPhase[u][v])
                 if tag == 'phase':
-                    point = self.outputPhase[u][v]
+                    point = self.scaledPhase[u][v]
                 if tag == 'power':
                     point = self.outputPower[u][v]
                 exponent = cmath.exp(1j * cmath.pi * 2.0 *((float(u*x)/self.M)+(float(v*y)/self.N)))
@@ -89,13 +99,13 @@ class DFT:
 
 
 if __name__ == "__main__":
-    #imagePath = "BWskull.jpg"
-    #imagePath2 = "sword.png"
-    imagepath = "lenna.gif"
-    imagePath2 = "cln1.gif"
+    imagePath = "BWskull.jpg"
+    imagePath2 = "sword.png"
+    #imagePath = "elephant.png"
+    #imagePath2 = "sheep.png"
 
-    dft = DFT(imagePath,"skull")
-    dft2 = DFT(imagePath2,"sword")
+    dft = DFT(imagePath,"elephant")
+    dft2 = DFT(imagePath2,"sheep")
     dft.takeDft()
     dft.takeIDFT()
     dft.takeIDFT("phase")
@@ -105,6 +115,7 @@ if __name__ == "__main__":
     dft2.takeIDFT()
     dft2.takeIDFT("phase")
     dft2.takeIDFT("power")
+    
     
     TEMPoutputPower = np.empty([dft.M, dft.N])
     TEMPoutputPower = dft.outputPower
