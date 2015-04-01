@@ -63,21 +63,14 @@ class DFT:
 
     def takeIDFT(self,tag='none'):
         self.outputIDFT = np.empty([self.M, self.N])
-        self.scaledIDFT = np.empty([self.M, self.N])
-        max_value = 0
-        for x in range(self.M):
-            for y in range(self.N):
-                value = int(abs(self.computeIPoint(x,y,tag))).real
-                if value >= max_value:
-                    max_value = value
-                self.outputIDFT[x][y] = value
         
         for x in range(self.M):
             for y in range(self.N):
-                self.scaledIDFT[x][y] = int((255.0/math.log10(256))*(math.log10(1+
-                        ((255.0*abs(self.outputIDFT[x][y]))/(max_value)))))
-                        
-        outputiDFT_im = Image.fromarray(self.scaledIDFT)
+                value = self.computeIPoint(x,y,tag)
+                self.outputIDFT[x][y] = abs(int(value.real))
+        
+        
+        outputiDFT_im = Image.fromarray(self.outputIDFT)
         outputiDFT_im.convert('RGB').save(self.name + "idftImage"+ tag + ".jpg")                 
    
     def computeIPoint(self, x, y,tag):
