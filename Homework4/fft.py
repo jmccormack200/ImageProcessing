@@ -2,10 +2,12 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-img = cv2.imread('BWSkull.jpg',0)
+img = cv2.imread('lenna.jpg',0)
 img2 = cv2.imread('skulldftPower.jpg',0)
 f = np.fft.fft2(img)
 fshift = np.fft.fftshift(f)
+
+
 magnitude_spectrum = 20*np.log(np.abs(fshift))
 img3 = abs(img2 - magnitude_spectrum)
 plt.subplot(141),plt.imshow(img, cmap = 'gray')
