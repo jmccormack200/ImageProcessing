@@ -104,8 +104,8 @@ if __name__ == "__main__":
     #imagePath = "elephant.png"
     #imagePath2 = "sheep.png"
 
-    dft = DFT(imagePath,"elephant")
-    dft2 = DFT(imagePath2,"sheep")
+    dft = DFT(imagePath,"skull")
+    dft2 = DFT(imagePath2,"sword")
     dft.takeDft()
     dft.takeIDFT()
     dft.takeIDFT("phase")
