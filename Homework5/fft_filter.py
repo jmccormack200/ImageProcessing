@@ -46,6 +46,9 @@ class fft_filter():
         
     def gaussianLowpassFilter(self,frequency):
         self.gaussianFilter(frequency)
+    
+    def gaussianHighpassFilter(self,frequency):
+        self.gaussianFilter(frequency,False)
         
     def idealFilter(self,frequency,low=True):
         filter = np.zeros((2*self.rows, 2*self.columns), dtype=np.int)
@@ -90,12 +93,44 @@ class fft_filter():
         
         a = self.rows
         b = self.columns
-
+        highLow = 0 if low else 1
+        
         for row in range((-1*self.rows),self.rows):
             for column in range((-1*self.columns),self.columns):
-                if low:
-                    distance = math.sqrt(row**2 + column**2)
-                    filter[row + a][column + b] = (math.exp(-1.0*distance/((2.0*frequency)**2.0)))
+                distance = math.sqrt(row**2 + column**2)
+                filter[row + a][column + b] = highLow - (math.exp(-1.0*distance/((2.0*frequency)**2.0)))
+
+        outputFFT = np.multiply(self.fshift, filter)
+
+        im = Image.fromarray(np.uint8(20*np.log(np.abs(outputFFT))))
+        if low:
+            im.convert('RGB').save("GaussianLPFFT.jpg")
+        else:
+            im.convert('RGB').save("GaussianHPFFT.jpg")
+        
+        outputImage = np.fft.ifftshift(outputFFT)
+        outputImage = np.fft.ifft2(outputImage)
+        
+        for row in range(self.rows):
+            for column in range(self.columns):
+                cropped[row][column] = abs(outputImage[row][column])
+        
+        im = Image.fromarray(np.uint8(cropped))
+        if low:
+            im.convert('RGB').save("GaussianLP.jpg")
+        else:
+            im.convert('RGB').save("GaussianHP.jpg")
+            
+    def laplacianFilter(self, frequency):
+        filter = np.zeros((2*self.rows, 2*self.columns), dtype=np.float)
+        cropped = np.zeros((self.rows, self.columns), dtype = np.int)
+    
+        a = self.rows
+        b = self.columns
+    
+        for row in range((-1*self.rows),self.rows):
+            for column in range((-1*self.columns),self.columns):
+                filter[row + a][column + b] = (-1)*(row**2 + column**2)
 
         outputFFT = np.multiply(self.fshift, filter)
 
@@ -125,4 +160,5 @@ if __name__ == "__main__":
     #fft.idealLowpassFilter(50)
     #fft.idealHighpassFilter(20)
     #fft.gaussianLowpassFilter(10)
-    fft.gaussianLowpassFilter(2)
+    #fft.gaussianLowpassFilter(2)
+    fft.gaussianHighpassFilter(5)
