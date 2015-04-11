@@ -36,7 +36,13 @@ class fft_filter():
         im = Image.fromarray(np.uint8(self.magnitudeSpec))
         im.convert('RGB').save("FFT.jpg")
         
-    def idealLowpassFilter(self,frequency=10):
+    def idealLowpassFilter(self,frequency):
+        self.idealFilter(frequency)
+        
+    def idealHighpassFilter(self,frequency):
+        self.idealFilter(frequency,False)
+        
+    def idealFilter(self,frequency,low=True):
         filter = np.zeros((2*self.rows, 2*self.columns), dtype=np.int)
         cropped = np.zeros((self.rows, self.columns), dtype = np.int)
         
@@ -45,29 +51,73 @@ class fft_filter():
 
         for row in range((-1*self.rows),self.rows):
             for column in range((-1*self.columns),self.columns):
-                if ((row - a) ** 2 + (column - b) ** 2 <= frequency ** 2):
-                    filter[row + a][column + b] = 1
-        im = Image.fromarray(np.uint8(filter))
-        im.convert('RGB').save("Filter.jpg")
+                if low:
+                    if (((row - a) ** 2) + ((column - b) ** 2) <= frequency ** 2):
+                        filter[row + a][column + b] = 1
+                else:
+                    if (((row - a) ** 2) + ((column - b) ** 2) >= frequency ** 2):
+                        filter[row + a][column + b] = 1
+
         outputFFT = np.multiply(self.fshift, filter)
 
         im = Image.fromarray(np.uint8(20*np.log(np.abs(outputFFT))))
-        im.convert('RGB').save("IdealLPFFT.jpg")
+        if low:
+            im.convert('RGB').save("IdealLPFFT.jpg")
+        else:
+            im.convert('RGB').save("IdealHPFFT.jpg")
         
         outputImage = np.fft.ifftshift(outputFFT)
         outputImage = np.fft.ifft2(outputImage)
         
         for row in range(self.rows):
             for column in range(self.columns):
-                cropped[row][column] = outputImage[row][column]
+                cropped[row][column] = abs(outputImage[row][column])
         
         im = Image.fromarray(np.uint8(cropped))
-        im.convert('RGB').save("IdealLP.jpg")
-        
-    
+        if low:
+            im.convert('RGB').save("IdealLP.jpg")
+        else:
+            im.convert('RGB').save("IdealHP.jpg")
 
+    def gaussianFilter(self, frequency, low=True):
+        filter = np.zeros((2*self.rows, 2*self.columns), dtype=np.int)
+        cropped = np.zeros((self.rows, self.columns), dtype = np.int)
+        
+        a = self.rows / 2
+        b = self.columns / 2
+
+        for row in range((-1*self.rows),self.rows):
+            for column in range((-1*self.columns),self.columns):
+                if low:
+                    if (((row - a) ** 2) + ((column - b) ** 2) <= frequency ** 2):
+                        filter[row + a][column + b] = 1
+                else:
+                    if (((row - a) ** 2) + ((column - b) ** 2) >= frequency ** 2):
+                        filter[row + a][column + b] = 1
+
+        outputFFT = np.multiply(self.fshift, filter)
+
+        im = Image.fromarray(np.uint8(20*np.log(np.abs(outputFFT))))
+        if low:
+            im.convert('RGB').save("IdealLPFFT.jpg")
+        else:
+            im.convert('RGB').save("IdealHPFFT.jpg")
+        
+        outputImage = np.fft.ifftshift(outputFFT)
+        outputImage = np.fft.ifft2(outputImage)
+        
+        for row in range(self.rows):
+            for column in range(self.columns):
+                cropped[row][column] = abs(outputImage[row][column])
+        
+        im = Image.fromarray(np.uint8(cropped))
+        if low:
+            im.convert('RGB').save("IdealLP.jpg")
+        else:
+            im.convert('RGB').save("IdealHP.jpg")
         
 if __name__ == "__main__":
     fft = fft_filter("lenna.jpg")
     #fft.graph()
-    fft.idealLowpassFilter(100)
+    fft.idealLowpassFilter(50)
+    fft.idealHighpassFilter(20)
