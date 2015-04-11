@@ -121,24 +121,26 @@ class fft_filter():
         else:
             im.convert('RGB').save("GaussianHP.jpg")
             
-    def laplacianFilter(self, frequency):
-        filter = np.zeros((2*self.rows, 2*self.columns), dtype=np.float)
+    def laplacianFilter(self):
+        filter = np.zeros((2*self.rows, 2*self.columns), dtype=np.int)
         cropped = np.zeros((self.rows, self.columns), dtype = np.int)
     
         a = self.rows
         b = self.columns
     
-        for row in range((-1*self.rows),self.rows):
-            for column in range((-1*self.columns),self.columns):
-                filter[row + a][column + b] = (-1)*(row**2 + column**2)
+        for row in range(self.rows * 2):
+            for column in range(self.columns * 2):
+                filter[row][column] = 1-(((row - a)**2 + (column - b)**2))
 
-        outputFFT = np.multiply(self.fshift, filter)
 
+        #outputFFT = np.multiply(self.fshift, filter)
+        
+        im = Image.fromarray(np.uint8(filter))
+        im.convert('RGB').save("test.jpg")
+        '''
         im = Image.fromarray(np.uint8(20*np.log(np.abs(outputFFT))))
-        if low:
-            im.convert('RGB').save("GaussianLPFFT.jpg")
-        else:
-            im.convert('RGB').save("GaussianHPFFT.jpg")
+        im.convert('RGB').save("LaplacianFFT.jpg")
+
         
         outputImage = np.fft.ifftshift(outputFFT)
         outputImage = np.fft.ifft2(outputImage)
@@ -147,11 +149,9 @@ class fft_filter():
             for column in range(self.columns):
                 cropped[row][column] = abs(outputImage[row][column])
         
-        im = Image.fromarray(np.uint8(cropped))
-        if low:
-            im.convert('RGB').save("GaussianLP.jpg")
-        else:
-            im.convert('RGB').save("GaussianHP.jpg")
+        im = Image.fromarray(np.uint8(outputImage))
+        im.convert('RGB').save("Laplacian.jpg")
+        '''
         
         
 if __name__ == "__main__":
@@ -161,4 +161,5 @@ if __name__ == "__main__":
     #fft.idealHighpassFilter(20)
     #fft.gaussianLowpassFilter(10)
     #fft.gaussianLowpassFilter(2)
-    fft.gaussianHighpassFilter(5)
+    #fft.gaussianHighpassFilter(5)
+    fft.laplacianFilter()
